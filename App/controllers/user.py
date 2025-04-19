@@ -1,5 +1,6 @@
 from App.models import User
 from App.database import db
+from flask_jwt_extended import verify_jwt_in_request, get_jwt_identity
 
 def create_user(username, password):
     newuser = User(username=username, password=password)
@@ -31,3 +32,12 @@ def update_user(id, username):
         return db.session.commit()
     return None
     
+def get_current_user():
+    try:
+        verify_jwt_in_request()
+        user_id = get_jwt_identity()
+        print("User ID from JWT:", user_id, type(user_id))  # Debug line
+        return User.query.get(int(user_id))  # ✅ Ensure it's an int
+    except Exception as e:
+        print(f"Error fetching current user: {e}")
+        return None

@@ -1,13 +1,566 @@
-{% extends "layout.html" %}
-{% block title %}Flask MVC App{% endblock %}
-{% block page %}Flask MVC App{% endblock %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aura Apartments | Premium Living Solutions</title>
+  <!-- Material Icons -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <!-- Materialize CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <style>
+    :root {
+      --primary: #2c3e50;      /* Dark blue/navy */
+      --secondary: #3498db;    /* Bright blue */
+      --accent: #e74c3c;       /* Coral red for CTAs */
+      --light: #ecf0f1;        /* Light gray */
+      --dark: #2c3e50;         /* Dark text */
+      --success: #27ae60;      /* Green */
+    }
 
-{{ super() }}
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f9f9f9;
+      color: var(--dark);
+    }
 
-{% block content %}
-    <h1>Aura Apartments</h1>
-    {% if is_authenticated %}
-        <p> Welcome {{current_user.username}} </p>
+    /* Navigation */
+    nav {
+      background-color: var(--primary);
+      padding: 0 2rem;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      position: fixed;  /* Fix the navbar to the top */
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 100; /* Ensure navbar stays on top of other elements */
+    }
+
+    .brand-logo {
+      display: flex;
+      align-items: center;
+      font-weight: 600;
+    }
+
+    .logo-img {
+      height: 50px;
+      margin-right: 15px;
+    }
+
+    /* Hero Section */
+    .hero {
+      position: relative;
+      background: linear-gradient(rgba(44, 62, 80, 0.8), rgba(44, 62, 80, 0.8)), 
+                  url('https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+      background-size: cover;
+      background-position: center;
+      height: 400px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: white;
+      padding: 0 20px;
+      overflow-x: hidden;
+    }
+    .hero .container {
+      width: 100%;
+      max-width: 100%;
+      margin: 0 auto;
+    }
+    .hero h1 {
+      font-size: 3rem;
+      font-weight: 700;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+      margin-bottom: 20px;
+    }
+
+    .hero p {
+      font-size: 1.2rem;
+      max-width: 700px;
+      margin: 0 auto 30px;
+    }
+
+    /* Search Bar */
+    .search-container {
+      max-width: 800px;
+      margin: -30px auto 50px;
+      position: relative;
+      z-index: 10;
+    }
+
+    .search-box {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    /* Apartment Cards */
+    .apartment-card {
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+      transition: transform 0.3s, box-shadow 0.3s;
+      margin-bottom: 30px;
+      background: white;
+    }
+
+    .apartment-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+
+    .card-image {
+      height: 200px;
+      overflow: hidden;
+    }
+
+    .card-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s;
+    }
+
+    .apartment-card:hover .card-image img {
+      transform: scale(1.05);
+    }
+
+    .card-content {
+      padding: 20px;
+    }
+
+    .card-title {
+      font-size: 1.4rem;
+      font-weight: 600;
+      margin-bottom: 10px;
+      color: var(--primary);
+    }
+
+    .card-location {
+      color: #7f8c8d;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+    }
+
+    .card-location i {
+      margin-right: 5px;
+    }
+
+    .card-rating {
+      color: #f1c40f;
+      margin-bottom: 15px;
+    }
+
+    /* Buttons */
+    .btn, .btn-large {
+      background-color: var(--accent);
+      font-weight: 600;
+      text-transform: none;
+    }
+
+    .btn:hover, .btn-large:hover {
+      background-color: #c0392b;
+    }
+
+    /* Forms */
+    .form-container {
+      max-width: 600px;
+      margin: 50px auto;
+      padding: 30px;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    }
+
+    /* Modal */
+    .modal { max-width: 500px; }
+
+    /* Utility Classes */
+    .section-title {
+      text-align: center;
+      margin: 50px 0;
+      color: var(--primary);
+      position: relative;
+    }
+
+    .section-title:after {
+      content: "";
+      display: block;
+      width: 80px;
+      height: 4px;
+      background: var(--accent);
+      margin: 15px auto 0;
+    }
+
+    /* Responsive Adjustments */
+    @media (max-width: 600px) {
+      .hero h1 { font-size: 2rem; }
+      .hero p { font-size: 1rem; }
+      .brand-logo img { height: 40px; }
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="nav-wrapper">
+      <a href="#" data-target="mobile-menu" class="sidenav-trigger show-on-large">
+        <i class="material-icons">menu</i>
+      </a>
+      
+      <a href="{{ url_for('index') }}" class="brand-logo center">
+        <span>Aura Apartments</span>
+      </a>
+      
+      <ul class="right hide-on-med-and-down">
+        {% if is_authenticated %}
+          <li><span style="padding: 0 15px; color: white;">Logged in as: {{ current_user.username }}</span></li>
+          <li><a href="{{ url_for('auth_views.logout_api') }}" class="waves-effect">Logout</a></li>
+          <li><a href="#!" onclick="showUserPage()" class="waves-effect">My Account</a></li>
+          <li><a href="#!" onclick="showAddListing()" class="waves-effect">Add Listing</a></li>
+        {% else %}
+          <li><a href="{{ url_for('auth_views.login_page') }}" class="waves-effect">Login</a></li>
+          <li><a href="{{ url_for('auth_views.signup_route') }}" class="waves-effect">Sign Up</a></li>
+        {% endif %}
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Update mobile menu -->
+  <ul class="sidenav" id="mobile-menu">
+    <li><a href="{{ url_for('index') }}">Home</a></li>
+    {% if current_user %}
+      <li><span style="padding: 0 32px;">Logged in as: {{ current_user.username }}</span></li>
+      <li><a href="#!" onclick="showAddListing()">Add Listing</a></li>
+      <li><a href="#!" onclick="showUserPage()">My Account</a></li>
+      <li><a href="{{ url_for('auth_views.logout_api') }}">Logout</a></li>
+    {% else %}
+    <li><a href="{{ url_for('auth_views.login_action') }}">Login</a></li>
+    <li><a href="{{ url_for('auth_views.signup_route') }}">Sign Up</a></li>
     {% endif %}
-    <p>This is a boileplate flask application which follows the MVC pattern for structuring the project.</p>
-{% endblock %}
+  </ul>
+
+  <!-- Hero Section -->
+  <section class="hero valign-wrapper">
+    <div class="container">
+      <h1>Find Your Perfect Apartment</h1>
+      <p>Discover premium living spaces with verified reviews and top-rated amenities across major cities.</p>
+      <a href="#!" class="btn-large waves-effect" onclick="showAddListing()">List Your Property</a>
+    </div>
+  </section>
+
+  <!-- Search Bar -->
+  <div class="container search-container">
+    <div class="search-box">
+      <div class="row">
+        <div class="input-field col s12 m8">
+          <input type="text" id="search" placeholder="Search by city, neighborhood, or amenities...">
+        </div>
+        <div class="col s12 m4">
+          <button class="btn waves-effect waves-light" style="width:100%">Search</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<!-- Featured Apartments -->
+<div class="container" id="apartments-container">
+  <h2 class="section-title">Featured Listings</h2>
+  <div class="row" id="apartments-row">
+    {% for item in featured_apartments %}
+    {% set apartment = item['listing'] %}
+    {% set avg_rating = item['average_rating'] %}
+    <div class="col s12 m6 l4">
+      <div class="apartment-card">
+        <div class="card-image">
+          <img src="{{ apartment.image_url }}" alt="{{ apartment.name }}">
+        </div>
+        <div class="card-content">
+          <h5 class="card-title">{{ apartment.name }}</h5>
+          <div class="card-location">
+            <i class="material-icons tiny">location_on</i>
+            <span>{{ apartment.address }}, {{ apartment.city }}</span>
+          </div>
+          <div class="card-rating">
+            {% for _ in range(avg_rating|int) %}
+            <i class="material-icons tiny">star</i>
+            {% endfor %}
+          {% if avg_rating %}<small>({{ avg_rating }} stars)</small>{% endif %}
+          </div>
+          <p class="truncate">{{ apartment.description }}</p>
+          <div class="price" style="font-weight: bold; margin: 10px 0;">${{ apartment.price }}/month</div>
+          <div class="amenities" style="margin-bottom: 15px;">
+            {% for amenity in apartment.amenities %}
+              <div class="chip">{{ amenity.name }}</div>
+            {% endfor %}
+          </div>
+          <a href="{{ url_for('listing.view_listing', listing_id=apartment.id) }}" class="btn waves-effect waves-light">View Details</a>
+        </div>
+      </div>
+    </div>
+  {% endfor %}
+  </div>
+</div>
+
+<!-- Database Listings -->
+<div class="container" id="db-listings-container">
+  <h2 class="section-title">Listings</h2>
+  <div class="row">
+    {% for listing in user_listings %}
+    <div class="col s12 m6 l4">
+      <div class="apartment-card">
+        <div class="card-image">
+          <img src="{{ listing.image_url }}" alt="{{ listing.title }}">
+        </div>
+        <div class="card-content">
+          <h5 class="card-title">{{ listing.title }}</h5>
+          <div class="card-location">
+            <i class="material-icons tiny">location_on</i>
+            <span>{{ listing.address }}, {{ listing.city }}</span>
+          </div>
+          <p class="truncate">{{ listing.description }}</p>
+          <div class="price" style="font-weight: bold; margin: 10px 0;">
+            ${{ listing.price }}/month
+          </div>
+          <div class="amenities" style="margin-bottom: 15px;">
+            {% for amenity in listing.amenities %}
+              <div class="chip">{{ amenity.name }}</div>
+            {% endfor %}
+          </div>
+          <a href="{{ url_for('listing.view_listing', listing_id=listing.id) }}" class="btn waves-effect waves-light">
+            View Details
+          </a>
+        </div>
+      </div>
+    </div>
+    {% else %}
+    <p class="center grey-text">No listings added yet.</p>
+    {% endfor %}
+  </div>
+</div>
+
+
+<!-- User Profile Page (hidden by default) -->
+<div id="user-page" style="display:none;">
+  <div class="container">
+    <div class="row">
+      <div class="col s12 m4">
+        <div class="card-panel center">
+          <img src="https://via.placeholder.com/150" class="circle responsive-img" alt="Profile">
+          <h5>{{ current_user.username if current_user }}</h5>
+
+          <p class="grey-text">
+            Current Role:
+            <span class="chip blue white-text">
+              {{ current_user.type.capitalize() if current_user and current_user.type }}
+            </span>
+          </p>
+
+          <!-- Form to switch user type -->
+          <form method="POST" action="{{ url_for('user_views.change_user_type') }}">
+            <div class="input-field">
+              <select name="user_type" required>
+                <option value="" disabled selected>Switch Role</option>
+                <option value="tenant">Tenant</option>
+                <option value="landlord">Landlord</option>
+              </select>
+              <label>Change Account Type</label>
+            </div>
+            <button type="submit" class="btn waves-effect waves-light">Update</button>
+          </form>
+
+          <p style="margin-top: 10px;">Member since {{ current_user.joined_date if current_user }}</p>
+        </div>
+      </div>
+
+      <div class="col s12 m8">
+        <div class="card-panel">
+          <h5>My Listings</h5>
+          <div id="user-listings">
+            {% if user_listings %}
+              {% for listing in user_listings %}
+                <div class="listing-item">
+                  <h6>{{ listing.name }}</h6>
+                  <p>{{ listing.address }}</p>
+
+                  <div style="margin-top: 10px;">
+                    <!-- View Details -->
+                    <a href="{{ url_for('listing.view_listing', listing_id=listing.id) }}" class="btn blue lighten-1 waves-effect waves-light" style="margin-right: 10px;">
+                      View Details
+                  </a>
+
+                  <!-- Remove Listing -->
+                  <form method="POST" action="{{ url_for('listing.remove_listing', listing_id=listing.id) }}" style="display: inline;">
+                    <button type="submit" class="btn red lighten-1 waves-effect waves-light" onclick="return confirm('Are you sure you want to remove this listing?')">
+                      Remove
+                    </button>
+                  </form>
+                </div>
+              {% endfor %}
+            {% else %}
+              <p>You haven't added any listings yet.</p>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Add Listing Page Fix -->
+<div id="add-listing-page" style="display:none;">
+  <div class="container form-container">
+    <h4 class="center">Add New Listing</h4>
+    {% if not is_authenticated %}
+        <div class="card-panel red lighten-4">
+          <span class="red-text">You must be logged in to add a listing.</span>
+          <p><a href="{{ url_for('auth_views.login_page') }}" class="waves-effect">Login</a> or 
+          <a href="{{ url_for('auth_views.signup_route') }}" class="waves-effect">Sign up</a> to continue.</p>
+        </div>
+    {% elif current_user and current_user.type != 'landlord' %}
+        <div class="card-panel red lighten-4">
+          <span class="red-text">Only landlords can add listings.</span>
+        </div>
+    {% else %}
+        <form id="apartment-form" method="POST" action="{{ url_for('listing.add_listing') }}" enctype="multipart/form-data">
+          
+          <div class="input-field">
+            <input id="apartment-name" name="title" type="text" class="validate" required>
+            <label for="apartment-name">Property Name</label>
+          </div>
+          <div class="input-field">
+            <input id="apartment-address" name="address" type="text" class="validate" required>
+            <label for="apartment-address">Full Address</label>
+          </div>
+          <div class="row">
+            <div class="input-field col s12 m6">
+              <input id="apartment-city" name="city" type="text" class="validate" required>
+              <label for="apartment-city">City</label>
+            </div>
+            <div class="input-field col s12 m6">
+              <input id="apartment-price" name="price" type="number" class="validate" required>
+              <label for="apartment-price">Monthly Price ($)</label>
+            </div>
+          </div>
+          <div class="input-field">
+            <textarea id="apartment-description" name="description" class="materialize-textarea" required></textarea>
+            <label for="apartment-description">Description</label>
+          </div>
+          <div class="input-field">
+            <input id="apartment-image" name="image_url" type="url" class="validate" required>
+            <label for="apartment-image">Main Image URL</label>
+          </div>
+          <div class="input-field">
+            <select multiple id="apartment-amenities" name="amenities">
+              <option value="" disabled>Select Amenities</option>
+              <option value="wifi">WiFi</option>
+              <option value="parking">Parking</option>
+              <option value="pool">Pool</option>
+              <option value="gym">Gym</option>
+              <option value="laundry">Laundry</option>
+            </select>
+            <label>Amenities</label>
+          </div>
+          <button class="btn waves-effect waves-light" type="submit">Submit Listing</button>
+        </form>
+    {% endif %}
+  </div>
+</div>
+
+  <!-- Footer -->
+<footer class="page-footer" style="background-color: var(--primary); margin-top: 50px;">
+  <div class="container">
+    <div class="row">
+      <div class="col s12 m6">
+        <h5 class="white-text">Aura Apartments</h5>
+        <p class="grey-text text-lighten-4">Premium living solutions since 2023.</p>
+      </div>
+      <div class="col s12 m4 offset-m2">
+        <h5 class="white-text">Quick Links</h5>
+        <ul>
+          <li><a class="grey-text text-lighten-3 modal-trigger" href="#about-modal">About Us</a></li>
+          <li><a class="grey-text text-lighten-3 modal-trigger" href="#contact-modal">Contact</a></li>
+          <li><a cl ass="grey-text text-lighten-3 modal-trigger" href="#privacy-modal">Privacy Policy</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="footer-copyright">
+    <div class="container">
+    © {{ current_year }} Aura Apartments
+    </div>
+  </div>
+</footer>
+
+  <!-- About Modal -->
+  <div id="about-modal" class="modal">
+    <div class="modal-content">
+      <h4>About Aura Apartments</h4>
+      <p>We are dedicated to providing premium living solutions since 2023. Our platform connects property owners with potential tenants, ensuring a seamless rental experience.</p>
+    </div>
+    <div class="modal-footer">
+      <a href="#!" class="modal-close waves-effect btn-flat">Close</a>
+    </div>
+  </div>
+
+  <!-- Contact Modal -->
+  <div id="contact-modal" class="modal">
+    <div class="modal-content">
+      <h4>Contact Us</h4>
+      <p>Get in touch with our support team:</p>
+      <p>Email: support@auraapartments.com</p>
+      <p>Phone: (555) 123-4567</p>
+    </div>
+    <div class="modal-footer">
+      <a href="#!" class="modal-close waves-effect btn-flat">Close</a>
+    </div>
+  </div>
+
+  <!-- Privacy Policy Modal -->
+  <div id="privacy-modal" class="modal">
+    <div class="modal-content">
+      <h4>Privacy Policy</h4>
+      <p>We take your privacy seriously. Your data is securely stored and never shared with third parties without your explicit consent.</p>
+    </div>
+    <div class="modal-footer">
+      <a href="#!" class="modal-close waves-effect btn-flat">Close</a>
+    </div>
+  </div>
+
+  <!-- JavaScript -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+  <script>
+   document.addEventListener('DOMContentLoaded', function () {
+    M.Sidenav.init(document.querySelectorAll('.sidenav'));
+    M.Modal.init(document.querySelectorAll('.modal'));
+    M.FormSelect.init(document.querySelectorAll('select'));
+  });
+  function showUserPage() {
+    document.getElementById('apartments-container').style.display = 'none';
+    document.getElementById('add-listing-page').style.display = 'none';
+    document.getElementById('db-listings-container').style.display = 'none';
+    document.getElementById('user-page').style.display = 'block';
+  }
+
+  function showAddListing() {
+    document.getElementById('apartments-container').style.display = 'none';
+    document.getElementById('user-page').style.display = 'none';
+    document.getElementById('db-listings-container').style.display = 'none';
+    document.getElementById('add-listing-page').style.display = 'block';
+  }
+
+  function showHomePage() {
+    document.getElementById('user-page').style.display = 'none';
+    document.getElementById('add-listing-page').style.display = 'none';
+    document.getElementById('apartments-container').style.display = 'block';
+    document.getElementById('db-listings-container').style.display = 'block';
+  }
+
+  </script>
+</body>
+</html>

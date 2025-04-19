@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, jsonify, request, send_from_directory, flash, redirect, url_for
-from flask_jwt_extended import jwt_required, current_user as jwt_current_user
+from flask_jwt_extended import jwt_required, current_user as jwt_current_user, verify_jwt_in_request, get_jwt_identity
 
 from.index import index_views
 
@@ -9,6 +9,7 @@ from App.controllers import (
     get_all_users_json,
     jwt_required
 )
+from App.models import User
 
 user_views = Blueprint('user_views', __name__, template_folder='../templates')
 
@@ -38,3 +39,23 @@ def create_user_endpoint():
 @user_views.route('/static/users', methods=['GET'])
 def static_user_page():
   return send_from_directory('static', 'static-user.html')
+
+@user_views.route('/change-user-type', methods=['POST'])
+@jwt_required()
+def change_user_type():
+    new_type = request.form.get('user_type')
+
+    if new_type not in ['tenant', 'landlord']:
+        flash("Invalid user type selected.", "error")
+        return redirect(request.referrer or url_for('index'))
+
+    jwt_current_user.type = new_type
+    try:
+        from App.database import db
+        db.session.commit()
+        flash(f"User type updated to {new_type.capitalize()}.", "success")
+    except Exception as e:
+        flash("Failed to update user type.", "error")
+        print(f"Error updating user type: {e}")
+    
+    return redirect(request.referrer or url_for('index'))
