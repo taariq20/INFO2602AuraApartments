@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>{{ listing.title }} | Aura Apartments</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+</head>
+<body>
+  <div class="container" style="margin-top: 80px;">
+    <h4>{{ listing.title }}</h4>
+    <img src="{{ listing.image_url }}" alt="{{ listing.title }}" style="width: 100%; max-height: 400px; object-fit: cover;">
+    <p><strong>Address:</strong> {{ listing.address }}, {{ listing.city }}</p>
+    <p><strong>Price:</strong> ${{ listing.price }}/month</p>
+    <p><strong>Description:</strong> {{ listing.description }}</p>
+    
+    {% if listing.amenities %}
+      <p><strong>Amenities:</strong></p>
+      <ul>
+        {% for amenity in listing.amenities %}
+          <li>{{ amenity.name }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+
+    <hr>
+
+    <!-- Reviews Section -->
+    <h5>Reviews</h5>
+    {% if reviews %}
+      <ul class="collection">
+        {% for review in reviews %}
+          <li class="collection-item">
+            <strong>{{ review.tenant.username if review.tenant else 'Tenant' }}</strong> 
+            <span class="right">
+              {% for _ in range(review.rating) %}
+                <i class="material-icons tiny amber-text">star</i>
+              {% endfor %}
+            </span>
+            <p>{{ review.comment }}</p>
+            {% if is_authenticated and current_user.id == review.tenant_id %}
+            <form method="POST" action="{{ url_for('listing.delete_review', listing_id=listing.id, review_id=review.id) }}" style="display:inline;">
+              <button type="submit" class="btn-flat red-text" onclick="return confirm('Delete this review?')">
+                Delete
+              </button>
+            </form>
+            {% endif %}
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p>No reviews yet.</p>
+    {% endif %}
+
+    <!-- Add Review Form (for tenants) -->
+    {% if is_authenticated and current_user.type == 'tenant' %}
+      <form method="POST" action="{{ url_for('listing.add_review', listing_id=listing.id) }}">
+        <div class="input-field">
+          <textarea name="text" class="materialize-textarea" required></textarea>
+          <label for="text">Write your review</label>
+        </div>
+
+        <div class="input-field">
+          <select name="rating" required>
+            <option value="" disabled selected>Rate this apartment</option>
+            {% for i in range(1, 6) %}
+              <option value="{{ i }}">{{ i }} Star{{ 's' if i > 1 }}</option>
+            {% endfor %}
+          </select>
+          <label>Rating</label>
+        </div>
+
+        <button type="submit" class="btn waves-effect waves-light">Submit Review</button>
+      </form>
+    {% else %}
+      <p class="grey-text">Only tenants can leave reviews. Please log in or switch to a tenant account.</p>
+    {% endif %}
+
+    <div style="margin-top: 20px;">
+      <a href="{{ url_for('index') }}" class="btn-flat">← Back to Listings</a>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      M.FormSelect.init(document.querySelectorAll('select'));
+    });
+  </script>
+</body>
+</html>

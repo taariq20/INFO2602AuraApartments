@@ -46,3 +46,5 @@ class Landlord(User):
         'polymorphic_identity': 'landlord',
     }
 
+from App.models.models import Review
+Tenant.reviews = db.relationship('Review', backref='tenant', lazy=True)

@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login | Aura Apartments</title>
+  <!-- Material Icons -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <!-- Materialize CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <style>
+    :root {
+      --primary: #2c3e50;
+      --secondary: #3498db;
+      --accent: #e74c3c;
+      --light: #ecf0f1;
+      --dark: #2c3e50;
+      --success: #27ae60;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f9f9f9;
+      color: var(--dark);
+      display: flex;
+      min-height: 100vh;
+      flex-direction: column;
+    }
+    
+    main {
+      flex: 1 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 50px 0;
+    }
+    
+    .login-card {
+      max-width: 450px;
+      width: 100%;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      background-color: white;
+    }
+    
+    .login-card h3 {
+      color: var(--primary);
+      margin-bottom: 30px;
+      text-align: center;
+    }
+    
+    .btn {
+      background-color: var(--accent);
+      width: 100%;
+      margin-top: 20px;
+    }
+    
+    .btn:hover {
+      background-color: #c0392b;
+    }
+    
+    .signup-link {
+      text-align: center;
+      margin-top: 20px;
+    }
+    
+    .logo-section {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="container">
+      <div class="row">
+        <div class="col s12 m8 offset-m2 l6 offset-l3">
+          <div class="login-card">
+            <div class="logo-section">
+              <h4>Aura Apartments</h4>
+            </div>
+            <h3>Login to Your Account</h3>
+            
+            <form action="{{ url_for('auth_views.login_action') }}" method="POST">
+              <div class="input-field">
+                <input id="username" name="username" type="text" class="validate" required>
+                <label for="username">Username</label>
+              </div>
+              
+              <div class="input-field">
+                <input id="password" name="password" type="password" class="validate" required>
+                <label for="password">Password</label>
+              </div>
+              
+              <button class="btn waves-effect waves-light" type="submit">Login</button>
+            </form>
+            
+            <div class="signup-link">
+              <p>Don't have an account? <a href="{{ url_for('auth_views.signup_route') }}">Sign up</a></p>
+            </div>
+            
+            <div class="center-align" style="margin-top: 20px;">
+              <a href="{{ url_for('index') }}" class="btn-flat">Back to Home</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- JavaScript -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+</body>
+</html>
