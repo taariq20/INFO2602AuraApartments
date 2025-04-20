@@ -6,6 +6,22 @@ from App.database import db
 
 listing_bp = Blueprint('listing', __name__)
 
+@listing_bp.route('/add-listing', methods=['GET'])
+def add_listing_page():
+    return render_template('add_listing.html')
+
+@listing_bp.route('/add', methods=['GET'])
+@jwt_required()
+def add_listing_form():
+    user_id = get_jwt_identity()
+    user = User.query.get(user_id)
+
+    if not user or user.type != 'landlord':
+        flash("Only landlords can access this page", "error")
+        return redirect(url_for('index'))
+
+    return render_template('add_listing.html')
+
 # Add a new listing
 @listing_bp.route('/add', methods=['POST'])
 @jwt_required()

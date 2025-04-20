@@ -27,11 +27,8 @@ app.config['JWT_ACCESS_COOKIE_NAME'] = 'access_token_cookie'
 app.config['JWT_COOKIE_CSRF_PROTECT'] = False  # For simplicity in testing
 
 
-from App.models.models import Listing  # make sure this import is present at the top
-
 @app.route('/')
 def index():
-    from App.models.models import Listing, Review
     import datetime
 
     current_year = datetime.datetime.now().year

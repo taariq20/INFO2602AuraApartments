@@ -221,7 +221,6 @@
           <li><span style="padding: 0 15px; color: white;">Logged in as: {{ current_user.username }}</span></li>
           <li><a href="{{ url_for('auth_views.logout_api') }}" class="waves-effect">Logout</a></li>
           <li><a href="#!" onclick="showUserPage()" class="waves-effect">My Account</a></li>
-          <li><a href="#!" onclick="showAddListing()" class="waves-effect">Add Listing</a></li>
         {% else %}
           <li><a href="{{ url_for('auth_views.login_page') }}" class="waves-effect">Login</a></li>
           <li><a href="{{ url_for('auth_views.signup_route') }}" class="waves-effect">Sign Up</a></li>
@@ -235,7 +234,6 @@
     <li><a href="{{ url_for('index') }}">Home</a></li>
     {% if current_user %}
       <li><span style="padding: 0 32px;">Logged in as: {{ current_user.username }}</span></li>
-      <li><a href="#!" onclick="showAddListing()">Add Listing</a></li>
       <li><a href="#!" onclick="showUserPage()">My Account</a></li>
       <li><a href="{{ url_for('auth_views.logout_api') }}">Logout</a></li>
     {% else %}
@@ -249,23 +247,40 @@
     <div class="container">
       <h1>Find Your Perfect Apartment</h1>
       <p>Discover premium living spaces with verified reviews and top-rated amenities across major cities.</p>
-      <a href="#!" class="btn-large waves-effect" onclick="showAddListing()">List Your Property</a>
+      <a href="{{ url_for('listing.add_listing_page') }}" class="btn-large waves-effect">List Your Property</a>
     </div>
   </section>
 
-  <!-- Search Bar -->
-  <div class="container search-container">
-    <div class="search-box">
-      <div class="row">
-        <div class="input-field col s12 m8">
-          <input type="text" id="search" placeholder="Search by city, neighborhood, or amenities...">
-        </div>
-        <div class="col s12 m4">
-          <button class="btn waves-effect waves-light" style="width:100%">Search</button>
-        </div>
+<!-- Search Section -->
+<form action="{{ url_for('index_views.search') }}" method="GET">
+  <div class="row">
+    <div class="col s12 m8">
+      <div class="input-field">
+        <input type="text" name="query" placeholder="Search by title and city" value="{{ query }}" required>
       </div>
     </div>
+    <div class="col s12 m4">
+      <button type="submit" class="btn waves-effect waves-light" style="width: 100%;">Search</button>
+    </div>
   </div>
+</form>
+
+<!-- Display Error Message if No Listing Found -->
+{% if error_message %}
+  <div class="error-message" style="color: red; text-align: center; padding: 10px; border: 1px solid red; margin-top: 20px;">
+    <p>{{ error_message }}</p>
+  </div>
+{% endif %}
+
+<!-- Display Listing if Found -->
+{% if listing %}
+  <div class="listing-details">
+    <h2>{{ listing.title }}</h2>
+    <p>{{ listing.city }}</p>
+    <!-- Button to view the listing -->
+    <a href="{{ url_for('listing.view_listing', listing_id=listing.id) }}" class="btn waves-effect waves-light">View Listing</a>
+  </div>
+{% endif %}
 
 <!-- Featured Apartments -->
 <div class="container" id="apartments-container">
@@ -350,33 +365,45 @@
     <div class="row">
       <div class="col s12 m4">
         <div class="card-panel center">
+          <!-- Profile Image -->
           <img src="https://via.placeholder.com/150" class="circle responsive-img" alt="Profile">
-          <h5>{{ current_user.username if current_user }}</h5>
 
-          <p class="grey-text">
-            Current Role:
-            <span class="chip blue white-text">
-              {{ current_user.type.capitalize() if current_user and current_user.type }}
-            </span>
-          </p>
+          <!-- Username and Role -->
+          {% if current_user %}
+            <h5>{{ current_user.username }}</h5>
 
-          <!-- Form to switch user type -->
-          <form method="POST" action="{{ url_for('user_views.change_user_type') }}">
-            <div class="input-field">
-              <select name="user_type" required>
-                <option value="" disabled selected>Switch Role</option>
-                <option value="tenant">Tenant</option>
-                <option value="landlord">Landlord</option>
-              </select>
-              <label>Change Account Type</label>
-            </div>
-            <button type="submit" class="btn waves-effect waves-light">Update</button>
-          </form>
-
-          <p style="margin-top: 10px;">Member since {{ current_user.joined_date if current_user }}</p>
+            <p class="grey-text">
+              Current Role:
+              <span class="chip blue white-text">
+                {{ current_user.type.capitalize() }}
+              </span>
+            </p>
+          {% else %}
+            <h5>Guest</h5>
+            <p class="grey-text">Please log in to view your profile.</p>
+          {% endif %}
         </div>
       </div>
+    </div>
 
+    <!-- Switch Account Type Form and My Listings (hidden initially) -->
+    <div id="user-info" style="display:none;">
+      <!-- Form to switch user type -->
+      <form method="POST" action="{{ url_for('user_views.change_user_type') }}">
+        <div class="input-field">
+          <select name="user_type" required>
+            <option value="" disabled selected>Switch Role</option>
+            <option value="tenant">Tenant</option>
+            <option value="landlord">Landlord</option>
+          </select>
+          <label>Change Account Type</label>
+        </div>
+        <button type="submit" class="btn waves-effect waves-light">Update</button>
+      </form>
+
+      <p style="margin-top: 10px;">Member since {{ current_user.joined_date if current_user }}</p>
+
+      <!-- My Listings Section -->
       <div class="col s12 m8">
         <div class="card-panel">
           <h5>My Listings</h5>
@@ -391,14 +418,15 @@
                     <!-- View Details -->
                     <a href="{{ url_for('listing.view_listing', listing_id=listing.id) }}" class="btn blue lighten-1 waves-effect waves-light" style="margin-right: 10px;">
                       View Details
-                  </a>
+                    </a>
 
-                  <!-- Remove Listing -->
-                  <form method="POST" action="{{ url_for('listing.remove_listing', listing_id=listing.id) }}" style="display: inline;">
-                    <button type="submit" class="btn red lighten-1 waves-effect waves-light" onclick="return confirm('Are you sure you want to remove this listing?')">
-                      Remove
-                    </button>
-                  </form>
+                    <!-- Remove Listing -->
+                    <form method="POST" action="{{ url_for('listing.remove_listing', listing_id=listing.id) }}" style="display: inline;">
+                      <button type="submit" class="btn red lighten-1 waves-effect waves-light" onclick="return confirm('Are you sure you want to remove this listing?')">
+                        Remove
+                      </button>
+                    </form>
+                  </div>
                 </div>
               {% endfor %}
             {% else %}
@@ -408,67 +436,6 @@
         </div>
       </div>
     </div>
-  </div>
-</div>
-
-
-<!-- Add Listing Page Fix -->
-<div id="add-listing-page" style="display:none;">
-  <div class="container form-container">
-    <h4 class="center">Add New Listing</h4>
-    {% if not is_authenticated %}
-        <div class="card-panel red lighten-4">
-          <span class="red-text">You must be logged in to add a listing.</span>
-          <p><a href="{{ url_for('auth_views.login_page') }}" class="waves-effect">Login</a> or 
-          <a href="{{ url_for('auth_views.signup_route') }}" class="waves-effect">Sign up</a> to continue.</p>
-        </div>
-    {% elif current_user and current_user.type != 'landlord' %}
-        <div class="card-panel red lighten-4">
-          <span class="red-text">Only landlords can add listings.</span>
-        </div>
-    {% else %}
-        <form id="apartment-form" method="POST" action="{{ url_for('listing.add_listing') }}" enctype="multipart/form-data">
-          
-          <div class="input-field">
-            <input id="apartment-name" name="title" type="text" class="validate" required>
-            <label for="apartment-name">Property Name</label>
-          </div>
-          <div class="input-field">
-            <input id="apartment-address" name="address" type="text" class="validate" required>
-            <label for="apartment-address">Full Address</label>
-          </div>
-          <div class="row">
-            <div class="input-field col s12 m6">
-              <input id="apartment-city" name="city" type="text" class="validate" required>
-              <label for="apartment-city">City</label>
-            </div>
-            <div class="input-field col s12 m6">
-              <input id="apartment-price" name="price" type="number" class="validate" required>
-              <label for="apartment-price">Monthly Price ($)</label>
-            </div>
-          </div>
-          <div class="input-field">
-            <textarea id="apartment-description" name="description" class="materialize-textarea" required></textarea>
-            <label for="apartment-description">Description</label>
-          </div>
-          <div class="input-field">
-            <input id="apartment-image" name="image_url" type="url" class="validate" required>
-            <label for="apartment-image">Main Image URL</label>
-          </div>
-          <div class="input-field">
-            <select multiple id="apartment-amenities" name="amenities">
-              <option value="" disabled>Select Amenities</option>
-              <option value="wifi">WiFi</option>
-              <option value="parking">Parking</option>
-              <option value="pool">Pool</option>
-              <option value="gym">Gym</option>
-              <option value="laundry">Laundry</option>
-            </select>
-            <label>Amenities</label>
-          </div>
-          <button class="btn waves-effect waves-light" type="submit">Submit Listing</button>
-        </form>
-    {% endif %}
   </div>
 </div>
 
@@ -533,34 +500,34 @@
   </div>
 
   <!-- JavaScript -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
-  <script>
-   document.addEventListener('DOMContentLoaded', function () {
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
     M.Sidenav.init(document.querySelectorAll('.sidenav'));
     M.Modal.init(document.querySelectorAll('.modal'));
     M.FormSelect.init(document.querySelectorAll('select'));
   });
+
   function showUserPage() {
+    // Hide other pages
     document.getElementById('apartments-container').style.display = 'none';
-    document.getElementById('add-listing-page').style.display = 'none';
     document.getElementById('db-listings-container').style.display = 'none';
     document.getElementById('user-page').style.display = 'block';
-  }
 
-  function showAddListing() {
-    document.getElementById('apartments-container').style.display = 'none';
-    document.getElementById('user-page').style.display = 'none';
-    document.getElementById('db-listings-container').style.display = 'none';
-    document.getElementById('add-listing-page').style.display = 'block';
+    // Show/hide the user info section (Switch Account Type and My Listings)
+    var userInfo = document.getElementById('user-info');
+    if (userInfo.style.display === 'none' || userInfo.style.display === '') {
+      userInfo.style.display = 'block';
+    } else {
+      userInfo.style.display = 'none';
+    }
   }
 
   function showHomePage() {
     document.getElementById('user-page').style.display = 'none';
-    document.getElementById('add-listing-page').style.display = 'none';
     document.getElementById('apartments-container').style.display = 'block';
     document.getElementById('db-listings-container').style.display = 'block';
   }
-
-  </script>
+</script>
 </body>
 </html>
