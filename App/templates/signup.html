@@ -8,24 +8,29 @@
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <!-- Materialize CSS -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
-  <!-- Custom Styles -->
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
   <style>
     :root {
-      --primary: #2c3e50;      /* Dark blue/navy */
-      --secondary: #3498db;    /* Bright blue */
-      --accent: #e74c3c;       /* Coral red for CTAs */
-      --light: #ecf0f1;        /* Light gray */
-      --dark: #2c3e50;         /* Dark text */
-      --success: #27ae60;      /* Green */
+      --primary: #2c3e50;
+      --secondary: #3498db;
+      --accent: #e74c3c;
+      --light: #f8f9fa;
+      --dark: #212529;
+      --success: #27ae60;
+      --gold: #f1c40f;
     }
     
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #f9f9f9;
+      font-family: 'Montserrat', sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #e4e8eb 100%);
       color: var(--dark);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
     }
     
+    /* Header Styles (matching your login) */
     nav {
       background-color: var(--primary);
       padding: 0 2rem;
@@ -36,62 +41,167 @@
       display: flex;
       align-items: center;
       font-weight: 600;
+      height: 64px;
     }
     
-    .signup-container {
+    .brand-logo img {
+      height: 40px;
+      width: auto;
+      margin-right: 10px;
+    }
+    
+    /* Main Content Styles */
+    main {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+    
+    .auth-container {
       max-width: 500px;
-      margin: 80px auto;
-      padding: 30px;
+      width: 100%;
+      margin: 0 auto;
+    }
+    
+    .auth-card {
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
       background: white;
-      border-radius: 8px;
-      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
     }
     
-    .signup-header {
+    .auth-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 35px rgba(0,0,0,0.12);
+    }
+    
+    .auth-header {
+      background: var(--primary);
+      color: white;
+      padding: 2rem;
       text-align: center;
-      margin-bottom: 30px;
-      color: var(--primary);
     }
     
-    .signup-header h4 {
+    .auth-header h3 {
+      font-family: 'Playfair Display', serif;
+      margin: 0;
+      font-size: 1.8rem;
       font-weight: 600;
     }
     
-    .btn, .btn-large {
+    .auth-body {
+      padding: 2rem;
+    }
+    
+    .input-field label {
+      color: #6c757d;
+    }
+    
+    .input-field input:focus + label {
+      color: var(--primary) !important;
+    }
+    
+    .input-field input:focus {
+      border-bottom: 1px solid var(--primary) !important;
+      box-shadow: 0 1px 0 0 var(--primary) !important;
+    }
+    
+    .btn-primary {
       background-color: var(--accent);
       font-weight: 600;
-      text-transform: none;
-      width: 100%;
-      margin-top: 20px;
-    }
-    
-    .btn:hover, .btn-large:hover {
-      background-color: #c0392b;
-    }
-    
-    .login-link {
-      text-align: center;
-      margin-top: 20px;
-    }
-    
-    .alert {
-      padding: 15px;
-      margin-bottom: 20px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      padding: 0 2rem;
+      height: 45px;
+      line-height: 45px;
       border-radius: 4px;
+      transition: all 0.3s ease;
     }
     
-    .alert-success {
-      background-color: #d4edda;
-      color: #155724;
+    .btn-primary:hover {
+      background-color: #c0392b;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     }
     
-    .alert-danger {
-      background-color: #f8d7da;
-      color: #721c24;
+    .auth-footer {
+      text-align: center;
+      margin-top: 1.5rem;
+      color: #6c757d;
+    }
+    
+    .auth-footer a {
+      color: var(--primary);
+      font-weight: 500;
+      transition: color 0.2s ease;
+    }
+    
+    .auth-footer a:hover {
+      color: var(--accent);
+      text-decoration: none;
+    }
+    
+    .logo {
+      width: 80px;
+      height: 80px;
+      margin-bottom: 1rem;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid white;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    
+    .back-link {
+      display: inline-block;
+      margin-top: 1.5rem;
+      color: var(--primary);
+      transition: color 0.2s ease;
+    }
+    
+    .back-link:hover {
+      color: var(--accent);
+    }
+    
+    /* Custom checkbox styling */
+    .terms-checkbox {
+      margin: 20px 0 25px 35px;
+    }
+    
+    .terms-checkbox [type="checkbox"] + span:not(.lever) {
+      padding-left: 30px;
+      line-height: 24px;
+    }
+    
+    /* Footer Styles (matching your login) */
+    footer.page-footer {
+      background-color: var(--primary);
+      margin-top: 50px;
+    }
+    
+    @media (max-width: 600px) {
+      .auth-card {
+        border-radius: 0;
+      }
+      
+      .auth-header {
+        padding: 1.5rem;
+      }
+      
+      .auth-body {
+        padding: 1.5rem;
+      }
+      
+      .terms-checkbox {
+        margin-left: 25px;
+      }
     }
   </style>
 </head>
 <body>
+  <!-- Header (matching your login) -->
   <nav>
     <div class="nav-wrapper">
       <a href="{{ url_for('index') }}" class="brand-logo center">
@@ -103,111 +213,102 @@
       </ul>
     </div>
   </nav>
-  
+
   <!-- Mobile Side Navigation -->
   <ul class="sidenav" id="mobile-menu">
     <li><a href="{{ url_for('index') }}">Home</a></li>
     <li><a href="{{ url_for('auth_views.login_page') }}">Login</a></li>
   </ul>
 
-    <div class="signup-container">
-      <div class="signup-header">
-        <h4>Create Your Account</h4>
-        <p>Join Aura Apartments to find your perfect home or list your property.</p>
+  <!-- Main Content -->
+  <main>
+    <div class="auth-container">
+      <div class="auth-card">
+        <div class="auth-header">
+          <img src="https://th.bing.com/th/id/R.352c5ca7473808ed755fc1bb9e571bda?rik=cs7szrHsLHMVIQ&pid=ImgRaw&r=0" alt="Aura Apartments Logo" class="logo">
+          <h3>Join Our Community</h3>
+        </div>
+        
+        <div class="auth-body">
+          <form action="{{ url_for('auth_views.signup_route') }}" method="POST">
+            <div class="input-field">
+              <input id="username" name="username" type="text" class="validate" required>
+              <label for="username">Username</label>
+            </div>
+            
+            <div class="input-field">
+              <input id="email" name="email" type="email" class="validate" required>
+              <label for="email">Email Address</label>
+            </div>
+            
+            <div class="input-field">
+              <input id="password" name="password" type="password" class="validate" required>
+              <label for="password">Password</label>
+            </div>
+            
+            <div class="input-field">
+              <input id="confirm_password" name="confirm_password" type="password" class="validate" required>
+              <label for="confirm_password">Confirm Password</label>
+            </div>
+            
+            <div class="input-field">
+              <select name="user_type" required>
+                <option value="" disabled selected>Choose account type</option>
+                <option value="tenant">Tenant</option>
+                <option value="landlord">Landlord</option>
+              </select>
+              <label>Account Type</label>
+            </div>
+            
+            <div class="terms-checkbox">
+              <label>
+                <input type="checkbox" name="agree_terms" required />
+                <span>I agree to the <a href="#terms-modal" class="modal-trigger">Terms and Conditions</a></span>
+              </label>
+            </div>
+            
+            <div class="center-align">
+              <button class="btn btn-primary waves-effect waves-light" type="submit">
+                Sign Up <i class="material-icons right">arrow_forward</i>
+              </button>
+            </div>
+          </form>
+          
+          <div class="auth-footer">
+            <p>Already have an account? <a href="{{ url_for('auth_views.login_page') }}">Login here</a></p>
+            <a href="{{ url_for('index') }}" class="back-link">
+              <i class="material-icons left">arrow_back</i> Return to homepage
+            </a>
+          </div>
+        </div>
       </div>
-      
-      <form action="{{ url_for('auth_views.signup_route') }}" method="POST">
-        <div class="input-field">
-          <i class="material-icons prefix">person</i>
-          <input id="username" name="username" type="text" class="validate" required>
-          <label for="username">Username</label>
-        </div>
-        
-        <div class="input-field">
-          <i class="material-icons prefix">email</i>
-          <input id="email" name="email" type="email" class="validate" required>
-          <label for="email">Email Address</label>
-        </div>
-        
-        <div class="input-field">
-          <i class="material-icons prefix">lock</i>
-          <input id="password" name="password" type="password" class="validate" required>
-          <label for="password">Password</label>
-        </div>
-        
-        <div class="input-field">
-          <i class="material-icons prefix">lock_outline</i>
-          <input id="confirm_password" name="confirm_password" type="password" class="validate" required>
-          <label for="confirm_password">Confirm Password</label>
-        </div>
-        
-        <div class="input-field">
-          <i class="material-icons prefix">assignment_ind</i>
-          <select name="user_type" required>
-            <option value="" disabled selected>Choose your account type</option>
-            <option value="tenant">Tenant</option>
-            <option value="landlord">Landlord</option>
-          </select>
-          <label>Account Type</label>
-        </div>
-        
-        <div class="input-field">
-          <label>
-            <input type="checkbox" name="agree_terms" required />
-            <span>I agree to the <a href="#terms-modal" class="modal-trigger">Terms and Conditions</a></span>
-          </label>
-        </div>
-        
-        <button class="btn waves-effect waves-light" type="submit">Sign Up</button>
-        
-        <div class="login-link">
-          Already have an account? <a href="{{ url_for('auth_views.login_page') }}">Login</a>
-        </div>
-      </form>
     </div>
-  </div>
-  
-  <!-- Terms and Conditions Modal -->
-  <div id="terms-modal" class="modal">
-    <div class="modal-content">
-      <h4>Terms and Conditions</h4>
-      <p>By using Aura Apartments, you agree to the following terms:</p>
-      <ul>
-        <li>All information provided must be accurate and truthful.</li>
-        <li>You must be at least 18 years of age to use this service.</li>
-        <li>We respect your privacy and will handle your data according to our privacy policy.</li>
-        <li>Landlords are responsible for ensuring their listings comply with local housing laws.</li>
-      </ul>
-    </div>
-    <div class="modal-footer">
-      <a href="#!" class="modal-close waves-effect btn-flat">Close</a>
-    </div>
-  </div>
+  </main>
 
-  <!-- Footer -->
-  <footer class="page-footer" style="background-color: var(--primary); margin-top: 50px;">
+ <!-- Footer -->
+<footer class="page-footer" style="background-color: var(--primary); margin-top: 50px;">
+  <div class="container">
+    <div class="row">
+      <div class="col s12 m6">
+        <h5 class="white-text">Aura Apartments</h5>
+        <p class="grey-text text-lighten-4">Premium living solutions since 2023.</p>
+      </div>
+      <div class="col s12 m4 offset-m2">
+        <h5 class="white-text">Quick Links</h5>
+        <ul>
+          <li><a class="grey-text text-lighten-3 modal-trigger" href="#about-modal">About Us</a></li>
+          <li><a class="grey-text text-lighten-3 modal-trigger" href="#contact-modal">Contact</a></li>
+          <li><a class="grey-text text-lighten-3 modal-trigger" href="#privacy-modal">Privacy Policy</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="footer-copyright">
     <div class="container">
-      <div class="row">
-        <div class="col s12 m6">
-          <h5 class="white-text">Aura Apartments</h5>
-          <p class="grey-text text-lighten-4">Premium living solutions since 2023.</p>
-        </div>
-        <div class="col s12 m4 offset-m2">
-          <h5 class="white-text">Quick Links</h5>
-          <ul>
-            <li><a class="grey-text text-lighten-3 modal-trigger" href="#about-modal">About Us</a></li>
-            <li><a class="grey-text text-lighten-3 modal-trigger" href="#contact-modal">Contact</a></li>
-            <li><a class="grey-text text-lighten-3 modal-trigger" href="#privacy-modal">Privacy Policy</a></li>
-          </ul>
-        </div>
-      </div>
+    © {{ current_year }} Aura Apartments
     </div>
-    <div class="footer-copyright">
-      <div class="container">
-      © {{ current_year if current_year else '2025' }} Aura Apartments
-      </div>
-    </div>
-  </footer>
+  </div>
+</footer>
 
   <!-- About Modal -->
   <div id="about-modal" class="modal">
@@ -243,12 +344,12 @@
       <a href="#!" class="modal-close waves-effect btn-flat">Close</a>
     </div>
   </div>
-  
+
   <!-- JavaScript -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', function() {
-      // Initialize Materialize components
+      
       M.Sidenav.init(document.querySelectorAll('.sidenav'));
       M.Modal.init(document.querySelectorAll('.modal'));
       M.FormSelect.init(document.querySelectorAll('select'));

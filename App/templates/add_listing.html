@@ -2,91 +2,288 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Add New Listing</title>
+  <title>Add New Listing | Aura Apartments</title>
+  <!-- Material Icons -->
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <!-- Materialize CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #2c3e50;
+      --secondary: #3498db;
+      --accent: #e74c3c;
+      --light: #f8f9fa;
+      --dark: #212529;
+      --success: #27ae60;
+      --gold: #f1c40f;
+    }
+    
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #e4e8eb 100%);
+      color: var(--dark);
+      min-height: 100vh;
+    }
+
+    nav {
+      background-color: var(--primary);
+      padding: 0 2rem;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .form-container {
+      max-width: 800px;
+      margin: 80px auto;
+    }
+    
+    .form-card {
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+      background: white;
+    }
+    
+    .form-header {
+      background: var(--primary);
+      color: white;
+      padding: 2rem;
+      text-align: center;
+    }
+    
+    .form-header h3 {
+      font-family: 'Playfair Display', serif;
+      margin: 0;
+      font-size: 1.8rem;
+      font-weight: 600;
+    }
+    
+    .form-body {
+      padding: 2rem;
+    }
+    
+    .input-field label {
+      color: var(--primary);
+    }
+    
+    .input-field input[type=text]:focus + label,
+    .input-field input[type=number]:focus + label,
+    .input-field input[type=url]:focus + label,
+    .input-field textarea:focus + label {
+      color: var(--accent);
+    }
+    
+    .input-field input[type=text]:focus,
+    .input-field input[type=number]:focus,
+    .input-field input[type=url]:focus,
+    .input-field textarea:focus {
+      border-bottom: 1px solid var(--accent);
+      box-shadow: 0 1px 0 0 var(--accent);
+    }
+    
+    .btn-primary {
+      background-color: var(--accent);
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      padding: 0 2rem;
+      height: 45px;
+      line-height: 45px;
+      border-radius: 4px;
+      transition: all 0.3s ease;
+    }
+    
+    .btn-primary:hover {
+      background-color: #c0392b;
+      transform: translateY(-2px);
+    }
+    
+    .back-link {
+      display: inline-block;
+      margin-top: 2rem;
+      color: var(--primary);
+      transition: color 0.2s ease;
+    }
+    
+    .back-link:hover {
+      color: var(--accent);
+    }
+    
+    .amenities-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    
+    .amenity-chip {
+      background: var(--light);
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 0.9rem;
+    }
+    
+    @media (max-width: 600px) {
+      .form-container {
+        margin: 20px auto;
+      }
+    }
+  </style>
 </head>
 <body>
 
-  <nav class="blue darken-3">
-    <div class="nav-wrapper container">
-      <a href="{{ url_for('index_views.index_page') }}" class="brand-logo">Home</a>
+  <nav>
+    <div class="nav-wrapper">
+      <a href="" class="brand-logo center">
+        <span>Aura Apartments</span>
+      </a>
+      <ul class="right hide-on-med-and-down">
+        <li><a href="{{ url_for('index') }}">Home</a></li>
+      </ul>
     </div>
   </nav>
 
-  <div class="container form-container" style="margin-top: 40px;">
-    <h4 class="center">Add New Listing</h4>
-
-    {% if not is_authenticated %}
-      <div class="card-panel red lighten-4">
-        <span class="red-text">You must be logged in to add a listing.</span>
-        <p><a href="{{ url_for('auth_views.login_page') }}" class="waves-effect">Login</a> or 
-        <a href="{{ url_for('auth_views.signup_route') }}" class="waves-effect">Sign up</a> to continue.</p>
+  <div class="form-container">
+    <div class="form-card">
+      <div class="form-header">
+        <h3>Add New Listing</h3>
       </div>
+      
+      <div class="form-body">
+        {% if not is_authenticated %}
+          <div class="card-panel red lighten-4">
+            <span class="red-text">You must be logged in to add a listing.</span>
+            <p><a href="{{ url_for('auth_views.login_page') }}" class="waves-effect">Login</a> or 
+            <a href="{{ url_for('auth_views.signup_route') }}" class="waves-effect">Sign up</a> to continue.</p>
+          </div>
 
-    {% elif current_user and current_user.type != 'landlord' %}
-      <div class="card-panel red lighten-4">
-        <span class="red-text">Only landlords can add listings.</span>
+        {% elif current_user and current_user.type != 'landlord' %}
+          <div class="card-panel red lighten-4">
+            <span class="red-text">Only landlords can add listings.</span>
+          </div>
+
+        {% else %}
+          <form id="apartment-form" method="POST" action="{{ url_for('listing.add_listing') }}" enctype="multipart/form-data">
+            <div class="input-field">
+              <input id="apartment-name" name="title" type="text" class="validate" required>
+              <label for="apartment-name">Property Name</label>
+            </div>
+
+            <div class="input-field">
+              <input id="apartment-address" name="address" type="text" class="validate" required>
+              <label for="apartment-address">Full Address</label>
+            </div>
+
+            <div class="row">
+              <div class="input-field col s12 m6">
+                <input id="apartment-city" name="city" type="text" class="validate" required>
+                <label for="apartment-city">City</label>
+              </div>
+              <div class="input-field col s12 m6">
+                <input id="apartment-price" name="price" type="number" class="validate" required>
+                <label for="apartment-price">Monthly Price ($)</label>
+              </div>
+            </div>
+
+            <div class="input-field">
+              <textarea id="apartment-description" name="description" class="materialize-textarea" required></textarea>
+              <label for="apartment-description">Description</label>
+            </div>
+
+            <div class="input-field">
+              <input id="apartment-image" name="image_url" type="text" class="validate" required>
+              <label for="apartment-image">Main Image URL</label>
+            </div>
+
+            <div class="input-field">
+              <select multiple id="apartment-amenities" name="amenities">
+                <option value="" disabled>Select Amenities</option>
+                <option value="wifi">WiFi</option>
+                <option value="parking">Parking</option>
+                <option value="pool">Pool</option>
+                <option value="gym">Gym</option>
+                <option value="laundry">Laundry</option>
+              </select>
+              <label>Amenities</label>
+            </div>
+
+            <button class="btn btn-primary waves-effect waves-light" type="submit">Submit Listing</button>
+          </form>
+        {% endif %}
+        
+        <a href="{{ url_for('index') }}" class="back-link">
+          <i class="material-icons left">arrow_back</i> Back to Listings
+        </a>
       </div>
-
-    {% else %}
-      <form id="apartment-form" method="POST" action="{{ url_for('listing.add_listing') }}" enctype="multipart/form-data">
-
-        <div class="input-field">
-          <input id="apartment-name" name="title" type="text" class="validate" required>
-          <label for="apartment-name">Property Name</label>
-        </div>
-
-        <div class="input-field">
-          <input id="apartment-address" name="address" type="text" class="validate" required>
-          <label for="apartment-address">Full Address</label>
-        </div>
-
-        <div class="row">
-          <div class="input-field col s12 m6">
-            <input id="apartment-city" name="city" type="text" class="validate" required>
-            <label for="apartment-city">City</label>
-          </div>
-          <div class="input-field col s12 m6">
-            <input id="apartment-price" name="price" type="number" class="validate" required>
-            <label for="apartment-price">Monthly Price ($)</label>
-          </div>
-        </div>
-
-        <div class="input-field">
-          <textarea id="apartment-description" name="description" class="materialize-textarea" required></textarea>
-          <label for="apartment-description">Description</label>
-        </div>
-
-        <div class="input-field">
-          <input id="apartment-image" name="image_url" type="url" class="validate" required>
-          <label for="apartment-image">Main Image URL</label>
-        </div>
-
-        <div class="input-field">
-          <select multiple id="apartment-amenities" name="amenities">
-            <option value="" disabled>Select Amenities</option>
-            <option value="wifi">WiFi</option>
-            <option value="parking">Parking</option>
-            <option value="pool">Pool</option>
-            <option value="gym">Gym</option>
-            <option value="laundry">Laundry</option>
-          </select>
-          <label>Amenities</label>
-        </div>
-
-        <button class="btn waves-effect waves-light" type="submit">Submit Listing</button>
-      </form>
-    {% endif %}
+    </div>
   </div>
 
-  <!-- Scripts -->
+  <!-- Footer -->
+<footer class="page-footer" style="background-color: var(--primary); margin-top: 50px;">
+  <div class="container">
+    <div class="row">
+      <div class="col s12 m6">
+        <h5 class="white-text">Aura Apartments</h5>
+        <p class="grey-text text-lighten-4">Premium living solutions since 2023.</p>
+      </div>
+      <div class="col s12 m4 offset-m2">
+        <h5 class="white-text">Quick Links</h5>
+        <ul>
+          <li><a class="grey-text text-lighten-3 modal-trigger" href="#about-modal">About Us</a></li>
+          <li><a class="grey-text text-lighten-3 modal-trigger" href="#contact-modal">Contact</a></li>
+          <li><a class="grey-text text-lighten-3 modal-trigger" href="#privacy-modal">Privacy Policy</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="footer-copyright">
+    <div class="container">
+    © {{ current_year }} Aura Apartments
+    </div>
+  </div>
+</footer>
+
+  <!-- About Modal -->
+  <div id="about-modal" class="modal">
+    <div class="modal-content">
+      <h4>About Aura Apartments</h4>
+      <p>We are dedicated to providing premium living solutions since 2023. Our platform connects property owners with potential tenants, ensuring a seamless rental experience.</p>
+    </div>
+    <div class="modal-footer">
+      <a href="#!" class="modal-close waves-effect btn-flat">Close</a>
+    </div>
+  </div>
+
+  <!-- Contact Modal -->
+  <div id="contact-modal" class="modal">
+    <div class="modal-content">
+      <h4>Contact Us</h4>
+      <p>Get in touch with our support team:</p>
+      <p>Email: support@auraapartments.com</p>
+      <p>Phone: (555) 123-4567</p>
+    </div>
+    <div class="modal-footer">
+      <a href="#!" class="modal-close waves-effect btn-flat">Close</a>
+    </div>
+  </div>
+
+  <!-- Privacy Policy Modal -->
+  <div id="privacy-modal" class="modal">
+    <div class="modal-content">
+      <h4>Privacy Policy</h4>
+      <p>We take your privacy seriously. Your data is securely stored and never shared with third parties without your explicit consent.</p>
+    </div>
+    <div class="modal-footer">
+      <a href="#!" class="modal-close waves-effect btn-flat">Close</a>
+    </div>
+  </div>
+
   <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', function() {
-      var elems = document.querySelectorAll('select');
-      M.FormSelect.init(elems);
+      M.FormSelect.init(document.querySelectorAll('select'));
+      M.Modal.init(document.querySelectorAll('.modal'));
     });
   </script>
 </body>

@@ -93,10 +93,120 @@
 
     .search-box {
       background: white;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      border: 1px solid rgba(0,0,0,0.05);
     }
+
+    .search-box .input-field input[type="text"] {
+      border-bottom: 2px solid var(--secondary);
+      padding-left: 10px;
+      font-size: 1.1rem;
+      height: 3rem;
+    }
+
+    .search-box .input-field label {
+      left: 10px;
+      color: var(--secondary);
+    }
+
+    .search-box .btn {
+      height: 3rem;
+      line-height: 3rem;
+      font-size: 1.1rem;
+      padding: 0 2rem;
+    }
+
+    /* Enhanced User Profile Section */
+    #user-page {
+      display: none;
+      margin-top: 80px;
+    }
+
+    .profile-container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .profile-card {
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+      background: white;
+      margin-bottom: 30px;
+    }
+
+    .profile-header {
+      background: var(--primary);
+      color: white;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    .profile-header h3 {
+      font-family: 'Playfair Display', serif;
+      margin: 0;
+      font-size: 1.8rem;
+      font-weight: 600;
+    }
+
+    .profile-body {
+      padding: 2rem;
+    }
+
+    .profile-section {
+      margin-bottom: 30px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid #eee;
+    }
+
+    .profile-section:last-child {
+      border-bottom: none;
+    }
+
+    .profile-section h5 {
+      color: var(--primary);
+      margin-bottom: 20px;
+      font-weight: 600;
+    }
+
+    .profile-img {
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 5px solid white;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      margin: 0 auto 20px;
+      display: block;
+    }
+
+    .user-info-row {
+      display: flex;
+      margin-bottom: 15px;
+      align-items: center;
+    }
+
+    .user-info-label {
+      font-weight: 600;
+      min-width: 150px;
+      color: var(--primary);
+    }
+
+    .user-info-value {
+      flex: 1;
+    }
+
+    .account-type-chip {
+      background: var(--secondary);
+      color: white;
+      padding: 5px 15px;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      display: inline-block;
+    }
+
 
     /* Apartment Cards */
     .apartment-card {
@@ -203,6 +313,19 @@
       .hero p { font-size: 1rem; }
       .brand-logo img { height: 40px; }
     }
+
+     /* Responsive Adjustments */
+     @media (max-width: 992px) {
+      .user-info-row {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      
+      .user-info-label {
+        margin-bottom: 5px;
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -252,18 +375,23 @@
   </section>
 
 <!-- Search Section -->
-<form action="{{ url_for('index_views.search') }}" method="GET">
-  <div class="row">
-    <div class="col s12 m8">
-      <div class="input-field">
-        <input type="text" name="query" placeholder="Search by title and city" value="{{ query }}" required>
+<div class="search-container">
+  <div class="search-box">
+    <form action="{{ url_for('index_views.search') }}" method="GET">
+      <div class="row">
+        <div class="input-field col s12 m8">
+          <input type="text" name="query" placeholder="Search by title, city or amenities" value="{{ query }}" required>
+          <label for="search">Find your perfect home</label>
+        </div>
+        <div class="col s12 m4">
+          <button type="submit" class="btn waves-effect waves-light" style="width:100%">
+            <i class="material-icons left">search</i> Search
+          </button>
+        </div>
       </div>
-    </div>
-    <div class="col s12 m4">
-      <button type="submit" class="btn waves-effect waves-light" style="width: 100%;">Search</button>
-    </div>
+    </form>
   </div>
-</form>
+</div>
 
 <!-- Display Error Message if No Listing Found -->
 {% if error_message %}
@@ -274,12 +402,48 @@
 
 <!-- Display Listing if Found -->
 {% if listing %}
-  <div class="listing-details">
-    <h2>{{ listing.title }}</h2>
-    <p>{{ listing.city }}</p>
-    <!-- Button to view the listing -->
-    <a href="{{ url_for('listing.view_listing', listing_id=listing.id) }}" class="btn waves-effect waves-light">View Listing</a>
+<div class="listing-results-container" style="margin-top: 50px;">
+  <div class="listing-card" style="max-width: 800px; margin: 0 auto;">
+    <div class="listing-image" style="height: 400px; border-radius: 12px 12px 0 0; overflow: hidden;">
+      <img src="{{ listing.image_url }}" alt="{{ listing.title }}" style="width: 100%; height: 100%; object-fit: cover;">
+    </div>
+    
+    <div class="listing-content" style="padding: 30px; background: white; border-radius: 0 0 12px 12px; box-shadow: 0 5px 25px rgba(0,0,0,0.08);">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h2 class="listing-title" style="font-size: 1.8rem; color: var(--primary); margin: 0;">{{ listing.title }}</h2>
+        <div class="listing-price" style="font-size: 1.5rem; font-weight: 700; color: var(--accent);">${{ listing.price }}/month</div>
+      </div>
+      
+      <div class="listing-location" style="display: flex; align-items: center; margin-bottom: 20px; color: var(--secondary);">
+        <i class="material-icons" style="margin-right: 8px;">location_on</i>
+        <span style="font-size: 1.1rem;">{{ listing.address }}, {{ listing.city }}</span>
+      </div>
+      
+      <div class="listing-description" style="margin-bottom: 25px; line-height: 1.6; color: #555;">
+        {{ listing.description }}
+      </div>
+      
+      {% if listing.amenities %}
+      <div class="listing-amenities" style="margin-bottom: 30px;">
+        <h5 style="color: var(--primary); margin-bottom: 15px;">Amenities</h5>
+        <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+          {% for amenity in listing.amenities %}
+            <span style="background: var(--light); padding: 8px 15px; border-radius: 20px; font-size: 0.9rem;">{{ amenity.name }}</span>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+      
+      <div style="display: flex; justify-content: flex-end;">
+        <a href="{{ url_for('listing.view_listing', listing_id=listing.id) }}" 
+           class="btn waves-effect waves-light" 
+           style="background-color: var(--accent); padding: 0 30px; height: 45px; line-height: 45px; font-size: 1.1rem;">
+          <i class="material-icons left">visibility</i> View Full Listing
+        </a>
+      </div>
+    </div>
   </div>
+</div>
 {% endif %}
 
 <!-- Featured Apartments -->
@@ -295,7 +459,7 @@
           <img src="{{ apartment.image_url }}" alt="{{ apartment.name }}">
         </div>
         <div class="card-content">
-          <h5 class="card-title">{{ apartment.name }}</h5>
+          <h5 class="card-title">{{ apartment.title }}</h5>
           <div class="card-location">
             <i class="material-icons tiny">location_on</i>
             <span>{{ apartment.address }}, {{ apartment.city }}</span>
@@ -360,78 +524,85 @@
 
 
 <!-- User Profile Page (hidden by default) -->
-<div id="user-page" style="display:none;">
-  <div class="container">
-    <div class="row">
-      <div class="col s12 m4">
-        <div class="card-panel center">
-          <!-- Profile Image -->
-          <img src="https://via.placeholder.com/150" class="circle responsive-img" alt="Profile">
-
-          <!-- Username and Role -->
-          {% if current_user %}
-            <h5>{{ current_user.username }}</h5>
-
-            <p class="grey-text">
-              Current Role:
-              <span class="chip blue white-text">
-                {{ current_user.type.capitalize() }}
-              </span>
-            </p>
-          {% else %}
-            <h5>Guest</h5>
-            <p class="grey-text">Please log in to view your profile.</p>
-          {% endif %}
-        </div>
+ <div id="user-page">
+  <div class="profile-container">
+    <div class="profile-card">
+      <div class="profile-header">
+        <h3>My Account</h3>
       </div>
-    </div>
-
-    <!-- Switch Account Type Form and My Listings (hidden initially) -->
-    <div id="user-info" style="display:none;">
-      <!-- Form to switch user type -->
-      <form method="POST" action="{{ url_for('user_views.change_user_type') }}">
-        <div class="input-field">
-          <select name="user_type" required>
-            <option value="" disabled selected>Switch Role</option>
-            <option value="tenant">Tenant</option>
-            <option value="landlord">Landlord</option>
-          </select>
-          <label>Change Account Type</label>
-        </div>
-        <button type="submit" class="btn waves-effect waves-light">Update</button>
-      </form>
-
-      <p style="margin-top: 10px;">Member since {{ current_user.joined_date if current_user }}</p>
-
-      <!-- My Listings Section -->
-      <div class="col s12 m8">
-        <div class="card-panel">
-          <h5>My Listings</h5>
-          <div id="user-listings">
-            {% if user_listings %}
-              {% for listing in user_listings %}
-                <div class="listing-item">
-                  <h6>{{ listing.name }}</h6>
-                  <p>{{ listing.address }}</p>
-
-                  <div style="margin-top: 10px;">
-                    <!-- View Details -->
-                    <a href="{{ url_for('listing.view_listing', listing_id=listing.id) }}" class="btn blue lighten-1 waves-effect waves-light" style="margin-right: 10px;">
-                      View Details
-                    </a>
-
-                    <!-- Remove Listing -->
-                    <form method="POST" action="{{ url_for('listing.remove_listing', listing_id=listing.id) }}" style="display: inline;">
-                      <button type="submit" class="btn red lighten-1 waves-effect waves-light" onclick="return confirm('Are you sure you want to remove this listing?')">
-                        Remove
-                      </button>
-                    </form>
-                  </div>
+      
+      <div class="profile-body">
+        <div class="row">
+          <div class="col s12 m4">
+            <div class="profile-section center">
+              <img src="https://i.pinimg.com/736x/99/aa/99/99aa992903cf7236e962a1cf6a58196a.jpg" class="profile-img" alt="Profile">
+              <h5>{{ current_user.username if current_user else 'Guest' }}</h5>
+              
+              <div class="account-type-chip">
+                {{ current_user.type.capitalize() if current_user and current_user.type else 'Guest' }}
+              </div>
+              
+              <p class="grey-text" style="margin-top: 10px;">
+                Member since {{ current_year }}
+              </p>
+            </div>
+          </div>
+          
+          <div class="col s12 m8">
+            <div class="profile-section">
+              <h5>Account Settings</h5>
+              
+              <form method="POST" action="{{ url_for('user_views.change_user_type') }}">
+                <div class="input-field">
+                  <select name="user_type" required>
+                    <option value="" disabled selected>Switch Account Type</option>
+                    <option value="tenant">Tenant</option>
+                    <option value="landlord">Landlord</option>
+                  </select>
+                  <label>Change Account Type</label>
                 </div>
-              {% endfor %}
-            {% else %}
-              <p>You haven't added any listings yet.</p>
-            {% endif %}
+                <button type="submit" class="btn waves-effect waves-light">
+                  Update Account Type
+                </button>
+              </form>
+            </div>
+            
+            <div class="profile-section">
+              <h5>My Listings</h5>
+              
+              <div id="user-listings">
+                {% if user_listings %}
+                  {% for listing in user_listings %}
+                    <div class="listing-item">
+                      <h6>{{ listing.name }}</h6>
+                      <p>{{ listing.address }}, {{ listing.city }}</p>
+                      <p class="price" style="font-weight: bold; margin: 5px 0;">
+                        ${{ listing.price }}/month
+                      </p>
+                      
+                      <div class="listing-actions">
+                        <a href="{{ url_for('listing.view_listing', listing_id=listing.id) }}" 
+                           class="btn waves-effect waves-light blue">
+                          <i class="material-icons left">visibility</i> View
+                        </a>
+                        
+                        <form method="POST" action="{{ url_for('listing.remove_listing', listing_id=listing.id) }}" style="display: inline;">
+                          <button type="submit" class="btn waves-effect waves-light red" 
+                                  onclick="return confirm('Are you sure you want to remove this listing?')">
+                            <i class="material-icons left">delete</i> Remove
+                          </button>
+                        </form>
+                      </div>
+                    </div>
+                  {% endfor %}
+                {% else %}
+                  <p class="grey-text">You haven't added any listings yet.</p>
+                  <a href="{{ url_for('listing.add_listing_page') }}" class="btn waves-effect waves-light">
+                    <i class="material-icons left">add</i> Add Listing
+                  </a>
+                {% endif %}
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -439,7 +610,7 @@
   </div>
 </div>
 
-  <!-- Footer -->
+ <!-- Footer -->
 <footer class="page-footer" style="background-color: var(--primary); margin-top: 50px;">
   <div class="container">
     <div class="row">
@@ -452,7 +623,7 @@
         <ul>
           <li><a class="grey-text text-lighten-3 modal-trigger" href="#about-modal">About Us</a></li>
           <li><a class="grey-text text-lighten-3 modal-trigger" href="#contact-modal">Contact</a></li>
-          <li><a cl ass="grey-text text-lighten-3 modal-trigger" href="#privacy-modal">Privacy Policy</a></li>
+          <li><a class="grey-text text-lighten-3 modal-trigger" href="#privacy-modal">Privacy Policy</a></li>
         </ul>
       </div>
     </div>
@@ -500,34 +671,31 @@
   </div>
 
   <!-- JavaScript -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
-<script>
-  document.addEventListener('DOMContentLoaded', function () {
-    M.Sidenav.init(document.querySelectorAll('.sidenav'));
-    M.Modal.init(document.querySelectorAll('.modal'));
-    M.FormSelect.init(document.querySelectorAll('select'));
-  });
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      M.Sidenav.init(document.querySelectorAll('.sidenav'));
+      M.Modal.init(document.querySelectorAll('.modal'));
+      M.FormSelect.init(document.querySelectorAll('select'));
+    });
 
-  function showUserPage() {
-    // Hide other pages
-    document.getElementById('apartments-container').style.display = 'none';
-    document.getElementById('db-listings-container').style.display = 'none';
-    document.getElementById('user-page').style.display = 'block';
-
-    // Show/hide the user info section (Switch Account Type and My Listings)
-    var userInfo = document.getElementById('user-info');
-    if (userInfo.style.display === 'none' || userInfo.style.display === '') {
-      userInfo.style.display = 'block';
-    } else {
-      userInfo.style.display = 'none';
+    function showUserPage() {
+      // Hide other pages
+      document.getElementById('apartments-container').style.display = 'none';
+      document.getElementById('db-listings-container').style.display = 'none';
+      
+      // Show user page
+      document.getElementById('user-page').style.display = 'block';
+      
+      // Scroll to top of user page
+      window.scrollTo({top: 0, behavior: 'smooth'});
     }
-  }
 
-  function showHomePage() {
-    document.getElementById('user-page').style.display = 'none';
-    document.getElementById('apartments-container').style.display = 'block';
-    document.getElementById('db-listings-container').style.display = 'block';
-  }
-</script>
+    function showHomePage() {
+      document.getElementById('user-page').style.display = 'none';
+      document.getElementById('apartments-container').style.display = 'block';
+      document.getElementById('db-listings-container').style.display = 'block';
+    }
+  </script>
 </body>
 </html>
