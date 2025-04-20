@@ -32,7 +32,13 @@ def index():
     import datetime
     current_year = datetime.datetime.now().year
     current_user = get_current_user()
-
+    
+    existing_user = Landlord.query.filter_by(username="landlord").first()
+    if not existing_user:
+        landlord = Landlord(username="landlord", password="password")
+        db.session.add(landlord)
+        db.session.commit()
+        
     sample_listings = [
         Listing(title="Cozy Studio Apartment", description="Perfect for students", price=850, address="10 George Street", city="Port of Spain", landlord_id=1, image_url="/static/images/sampleapartment1.jpg"),
         Listing(title="Modern 2-Bedroom", description="New appliances, quiet neighborhood", price=1200, address="25 Oxford Avenue", city="Port of Spain", landlord_id=1, image_url="/static/images/sampleapartment2.jpg"),
