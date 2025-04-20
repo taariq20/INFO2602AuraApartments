@@ -13,13 +13,6 @@ from App.controllers import (
 
 listing_views = Blueprint('listing_views', __name__, template_folder='../templates')
 
-
-@listing_views.route('/listings', methods=['GET'])
-def get_listing_page():
-    listings = get_all_listings()
-    return render_template('listings.html', listings=listings)
-
-
 @listing_views.route('/listings', methods=['POST'])
 @jwt_required()
 def create_listing_action():
