@@ -8,110 +8,294 @@
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <!-- Materialize CSS -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
-  <!-- Custom Styles -->
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
   <style>
     :root {
-      --primary: #2c3e50;
-      --secondary: #3498db;
-      --accent: #e74c3c;
-      --light: #ecf0f1;
-      --dark: #2c3e50;
-      --success: #27ae60;
+      --primary: #2c3e50;       /* Deep navy */
+      --secondary: #3498db;     /* Bright blue */
+      --accent: #e74c3c;        /* Coral red */
+      --light: #f8f9fa;         /* Light gray */
+      --dark: #212529;          /* Dark gray */
+      --success: #27ae60;       /* Green */
+      --gold: #f1c40f;          /* Gold for accents */
     }
     
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #f9f9f9;
+      font-family: 'Montserrat', sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #e4e8eb 100%);
       color: var(--dark);
-      display: flex;
       min-height: 100vh;
+      display: flex;
       flex-direction: column;
     }
     
+    nav {
+      background-color: var(--primary);
+      padding: 0 2rem;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .brand-logo {
+      display: flex;
+      align-items: center;
+      font-weight: 600;
+    }
+
     main {
-      flex: 1 0 auto;
+      flex: 1;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 50px 0;
+      padding: 2rem;
     }
     
-    .login-card {
-      max-width: 450px;
+    .auth-container {
+      max-width: 500px;
       width: 100%;
-      padding: 30px;
-      border-radius: 8px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-      background-color: white;
+      margin: 0 auto;
     }
     
-    .login-card h3 {
-      color: var(--primary);
-      margin-bottom: 30px;
+    .auth-card {
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      background: white;
+    }
+    
+    .auth-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 35px rgba(0,0,0,0.12);
+    }
+    
+    .auth-header {
+      background: var(--primary);
+      color: white;
+      padding: 2rem;
       text-align: center;
     }
     
-    .btn {
+    .auth-header h3 {
+      font-family: 'Playfair Display', serif;
+      margin: 0;
+      font-size: 1.8rem;
+      font-weight: 600;
+    }
+    
+    .auth-body {
+      padding: 2rem;
+    }
+    
+    .input-field label {
+      color: #6c757d;
+    }
+    
+    .input-field input:focus + label {
+      color: var(--primary) !important;
+    }
+    
+    .input-field input:focus {
+      border-bottom: 1px solid var(--primary) !important;
+      box-shadow: 0 1px 0 0 var(--primary) !important;
+    }
+    
+    .btn-primary {
       background-color: var(--accent);
-      width: 100%;
-      margin-top: 20px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      padding: 0 2rem;
+      height: 45px;
+      line-height: 45px;
+      border-radius: 4px;
+      transition: all 0.3s ease;
     }
     
-    .btn:hover {
+    .btn-primary:hover {
       background-color: #c0392b;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     }
     
-    .signup-link {
+    .auth-footer {
       text-align: center;
-      margin-top: 20px;
+      margin-top: 1.5rem;
+      color: #6c757d;
     }
     
-    .logo-section {
-      text-align: center;
-      margin-bottom: 30px;
+    .auth-footer a {
+      color: var(--primary);
+      font-weight: 500;
+      transition: color 0.2s ease;
+    }
+    
+    .auth-footer a:hover {
+      color: var(--accent);
+      text-decoration: none;
+    }
+    
+    .logo {
+      width: 80px;
+      height: 80px;
+      margin-bottom: 1rem;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid white;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    
+    .back-link {
+      display: inline-block;
+      margin-top: 1.5rem;
+      color: var(--primary);
+      transition: color 0.2s ease;
+    }
+    
+    .back-link:hover {
+      color: var(--accent);
+    }
+    
+    @media (max-width: 600px) {
+      .auth-card {
+        border-radius: 0;
+      }
+      
+      .auth-header {
+        padding: 1.5rem;
+      }
+      
+      .auth-body {
+        padding: 1.5rem;
+      }
     }
   </style>
 </head>
 <body>
+
+  <nav>
+    <div class="nav-wrapper">
+      <a href="https://th.bing.com/th/id/R.352c5ca7473808ed755fc1bb9e571bda?rik=cs7szrHsLHMVIQ&pid=ImgRaw&r=0" class="brand-logo center">
+        <span>Aura Apartments</span>
+      </a>
+      <ul class="right hide-on-med-and-down">
+        <li><a href="{{ url_for('index') }}">Home</a></li>
+        <li><a href="{{ url_for('auth_views.signup_route') }}">Sign up</a></li>
+      </ul>
+    </div>
+  </nav>
+  
+  <!-- Mobile Side Navigation -->
+  <ul class="sidenav" id="mobile-menu">
+    <li><a href="{{ url_for('index') }}">Home</a></li>
+    <li><a href="{{ url_for('auth_views.login_page') }}">Login</a></li>
+  </ul>
+
   <main>
-    <div class="container">
-      <div class="row">
-        <div class="col s12 m8 offset-m2 l6 offset-l3">
-          <div class="login-card">
-            <div class="logo-section">
-              <h4>Aura Apartments</h4>
-            </div>
-            <h3>Login to Your Account</h3>
-            
-            <form action="{{ url_for('auth_views.login_action') }}" method="POST">
-              <div class="input-field">
-                <input id="username" name="username" type="text" class="validate" required>
-                <label for="username">Username</label>
-              </div>
-              
-              <div class="input-field">
-                <input id="password" name="password" type="password" class="validate" required>
-                <label for="password">Password</label>
-              </div>
-              
-              <button class="btn waves-effect waves-light" type="submit">Login</button>
-            </form>
-            
-            <div class="signup-link">
-              <p>Don't have an account? <a href="{{ url_for('auth_views.signup_route') }}">Sign up</a></p>
+    <div class="auth-container">
+      <div class="auth-card">
+        <div class="auth-header">
+          <img src="https://th.bing.com/th/id/R.352c5ca7473808ed755fc1bb9e571bda?rik=cs7szrHsLHMVIQ&pid=ImgRaw&r=0" alt="Aura Apartments Logo" class="logo">
+          <h3>Welcome Back</h3>
+        </div>
+        
+        <div class="auth-body">
+          <form action="{{ url_for('auth_views.login_action') }}" method="POST">
+            <div class="input-field">
+              <input id="username" name="username" type="text" class="validate" required>
+              <label for="username">Username</label>
             </div>
             
-            <div class="center-align" style="margin-top: 20px;">
-              <a href="{{ url_for('index') }}" class="btn-flat">Back to Home</a>
+            <div class="input-field">
+              <input id="password" name="password" type="password" class="validate" required>
+              <label for="password">Password</label>
             </div>
+            
+            <div class="center-align">
+              <button class="btn btn-primary waves-effect waves-light" type="submit">
+                Login <i class="material-icons right">arrow_forward</i>
+              </button>
+            </div>
+          </form>
+          
+          <div class="auth-footer">
+            <p>Don't have an account? <a href="{{ url_for('auth_views.signup_route') }}">Create one</a></p>
+            <a href="{{ url_for('index') }}" class="back-link">
+              <i class="material-icons left">arrow_back</i> Return to homepage
+            </a>
           </div>
         </div>
       </div>
     </div>
   </main>
 
+  <!-- Footer -->
+<footer class="page-footer" style="background-color: var(--primary); margin-top: 50px;">
+  <div class="container">
+    <div class="row">
+      <div class="col s12 m6">
+        <h5 class="white-text">Aura Apartments</h5>
+        <p class="grey-text text-lighten-4">Premium living solutions since 2023.</p>
+      </div>
+      <div class="col s12 m4 offset-m2">
+        <h5 class="white-text">Quick Links</h5>
+        <ul>
+          <li><a class="grey-text text-lighten-3 modal-trigger" href="#about-modal">About Us</a></li>
+          <li><a class="grey-text text-lighten-3 modal-trigger" href="#contact-modal">Contact</a></li>
+          <li><a class="grey-text text-lighten-3 modal-trigger" href="#privacy-modal">Privacy Policy</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="footer-copyright">
+    <div class="container">
+    © {{ current_year }} Aura Apartments
+    </div>
+  </div>
+</footer>
+
+  <!-- About Modal -->
+  <div id="about-modal" class="modal">
+    <div class="modal-content">
+      <h4>About Aura Apartments</h4>
+      <p>We are dedicated to providing premium living solutions since 2023. Our platform connects property owners with potential tenants, ensuring a seamless rental experience.</p>
+    </div>
+    <div class="modal-footer">
+      <a href="#!" class="modal-close waves-effect btn-flat">Close</a>
+    </div>
+  </div>
+
+  <!-- Contact Modal -->
+  <div id="contact-modal" class="modal">
+    <div class="modal-content">
+      <h4>Contact Us</h4>
+      <p>Get in touch with our support team:</p>
+      <p>Email: support@auraapartments.com</p>
+      <p>Phone: (555) 123-4567</p>
+    </div>
+    <div class="modal-footer">
+      <a href="#!" class="modal-close waves-effect btn-flat">Close</a>
+    </div>
+  </div>
+
+  <!-- Privacy Policy Modal -->
+  <div id="privacy-modal" class="modal">
+    <div class="modal-content">
+      <h4>Privacy Policy</h4>
+      <p>We take your privacy seriously. Your data is securely stored and never shared with third parties without your explicit consent.</p>
+    </div>
+    <div class="modal-footer">
+      <a href="#!" class="modal-close waves-effect btn-flat">Close</a>
+    </div>
+  </div>
+
   <!-- JavaScript -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      M.Modal.init(document.querySelectorAll('.modal'));
+      M.FormSelect.init(document.querySelectorAll('select'));
+    });
+  </script>
 </body>
 </html>

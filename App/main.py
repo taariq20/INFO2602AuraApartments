@@ -30,14 +30,23 @@ app.config['JWT_COOKIE_CSRF_PROTECT'] = False  # For simplicity in testing
 @app.route('/')
 def index():
     import datetime
-
     current_year = datetime.datetime.now().year
     current_user = get_current_user()
 
-    # Get all listings from database
-    all_listings = Listing.query.all()
-    listings_with_ratings = []
+    sample_listings = [
+        Listing(title="Cozy Studio Apartment", description="Perfect for students", price=850, address="10 George Street", city="Port of Spain", landlord_id=1, image_url="/static/images/sampleapartment1.jpg"),
+        Listing(title="Modern 2-Bedroom", description="New appliances, quiet neighborhood", price=1200, address="25 Oxford Avenue", city="Port of Spain", landlord_id=1, image_url="/static/images/sampleapartment2.jpg"),
+        Listing(title="Downtown Condo", description="Close to campus and city center", price=1500, address="88 Port of Spain Blvd", city="Port of Spain", landlord_id=1, image_url="/static/images/sampleapartment3.jpg"),
+    ]
+    for listing in sample_listings:
+        db.session.add(listing)
 
+    db.session.commit()
+
+    # Load all listings from DB
+    all_listings = Listing.query.all()
+
+    listings_with_ratings = []
     for listing in all_listings:
         reviews = listing.reviews
         if reviews:
@@ -46,7 +55,6 @@ def index():
             avg_rating = 0
         listings_with_ratings.append((listing, avg_rating))
 
-    # Sort listings by average rating (desc) and select top 3
     featured = sorted(listings_with_ratings, key=lambda x: x[1], reverse=True)[:3]
     featured_apartments = [{'listing': f[0], 'average_rating': f[1]} for f in featured]
 
@@ -54,8 +62,10 @@ def index():
         'index.html',
         current_year=current_year,
         featured_apartments=featured_apartments,
-        user_listings=all_listings
+        all_listings=all_listings,
+        current_user=current_user
     )
+
 
 # User profile route (can be extended to show user listings, etc.)
 @app.route('/profile', methods=['GET'])
