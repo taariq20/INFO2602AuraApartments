@@ -17,6 +17,7 @@ from App.controllers.listing import listing_bp
 from App.views import views, setup_admin
 from App.models import User
 from App.models.models import Listing
+from App.models.user import Landlord
 
 app = Flask(__name__, static_url_path='/static')
 
