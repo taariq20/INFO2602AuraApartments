@@ -1,7 +1,7 @@
 from datetime import datetime
 from App.database import db
 
-class Review(db.Model):
+class Review(db.Model)
     id = db.Column(db.Integer, primary_key=True)
     rating = db.Column(db.Integer, nullable=False)
     comment = db.Column(db.String(200))
