@@ -64,6 +64,9 @@ class Listing(db.Model):
             'reviews': [r.get_json() for r in self.reviews]
         }
 
+    def is_added_by_user(self, user_id):
+        return self.landlord_id == user_id
+
 class Amenity(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100))
