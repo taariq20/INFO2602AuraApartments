@@ -18,14 +18,14 @@ from App.views import views, setup_admin
 from App.models import User
 from App.models.models import Listing
 from App.models.user import Landlord
+from App.controllers.listing import create_listing 
 
 app = Flask(__name__, static_url_path='/static')
 
-# JWT CONFIG FIX
-app.config['JWT_SECRET_KEY'] = 'super-secret'  # Replace with a real secret in production
+app.config['JWT_SECRET_KEY'] = 'super-secret'  
 app.config['JWT_TOKEN_LOCATION'] = ['cookies']
 app.config['JWT_ACCESS_COOKIE_NAME'] = 'access_token_cookie'
-app.config['JWT_COOKIE_CSRF_PROTECT'] = False  # For simplicity in testing
+app.config['JWT_COOKIE_CSRF_PROTECT'] = False  
 
 
 @app.route('/')
@@ -33,22 +33,36 @@ def index():
     import datetime
     current_year = datetime.datetime.now().year
     current_user = get_current_user()
-    
-    existing_user = Landlord.query.filter_by(username="landlord").first()
-    if not existing_user:
-        landlord = Landlord(username="landlord", password="password")
-        db.session.add(landlord)
-        db.session.commit()
-        
-    sample_listings = [
-        Listing(title="Cozy Studio Apartment", description="Perfect for students", price=850, address="10 George Street", city="Port of Spain", landlord_id=1, image_url="/static/images/sampleapartment1.jpg"),
-        Listing(title="Modern 2-Bedroom", description="New appliances, quiet neighborhood", price=1200, address="25 Oxford Avenue", city="Port of Spain", landlord_id=1, image_url="/static/images/sampleapartment2.jpg"),
-        Listing(title="Downtown Condo", description="Close to campus and city center", price=1500, address="88 Port of Spain Blvd", city="Port of Spain", landlord_id=1, image_url="/static/images/sampleapartment3.jpg"),
-    ]
-    for listing in sample_listings:
-        db.session.add(listing)
 
-    db.session.commit()
+    if not Listing.query.first():
+        create_listing(
+            title="Cozy Studio Apartment",
+            description="Cozy studio perfect for students.",
+            address="25 Oxford Avenue",
+            city="Port of Spain",
+            price=850,
+            landlord_id=1,
+            image_url="/static/images/sampleapartment1.jpg"
+        )
+        create_listing(
+            title="Downtown Condo",
+            description="New appliances, quiet neighborhood.",
+            address="5 Eastern Main Road",
+            city="Curepe",
+            price=900,
+            landlord_id=1,
+            image_url="/static/images/sampleapartment2.jpg"
+        )
+
+        create_listing(
+            title="Modern 2-Bedroom",
+            description="Close to campus and city center",
+            address="23 Ramjohn Trace",
+            city="Tunapuna",
+            price=1500,
+            landlord_id=1,
+            image_url="/static/images/sampleapartment3.jpg"
+        )
 
     # Load all listings from DB
     all_listings = Listing.query.all()
@@ -65,11 +79,17 @@ def index():
     featured = sorted(listings_with_ratings, key=lambda x: x[1], reverse=True)[:3]
     featured_apartments = [{'listing': f[0], 'average_rating': f[1]} for f in featured]
 
+    if current_user:
+        user_listings = [listing for listing in all_listings if listing.is_added_by_user(current_user.id)]
+    else:
+        user_listings = []
+        
     return render_template(
         'index.html',
         current_year=current_year,
         featured_apartments=featured_apartments,
         all_listings=all_listings,
+        user_listings=user_listings,
         current_user=current_user
     )
 
@@ -84,7 +104,7 @@ def user_profile():
         return jsonify(
             username=user.username,
             email=user.email,
-            listings=[listing.get_json() for listing in user.listings]  # Assuming User model has a relationship with listings
+            listings=[listing.get_json() for listing in user.listings] 
         )
     return jsonify(error="User not found"), 404
 
@@ -105,9 +125,9 @@ def create_app(overrides={}):
     add_views(app)
     init_db(app)
     app.config['JWT_TOKEN_LOCATION'] = ['cookies']
-    app.config['JWT_COOKIE_SECURE'] = False  # Set to True in production with HTTPS
+    app.config['JWT_COOKIE_SECURE'] = False  
     app.config['JWT_ACCESS_COOKIE_PATH'] = '/'
-    app.config['JWT_COOKIE_CSRF_PROTECT'] = False  # You can enable this if you implement CSRF
+    app.config['JWT_COOKIE_CSRF_PROTECT'] = False  
     jwt = setup_jwt(app)
     setup_admin(app)
 
